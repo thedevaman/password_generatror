@@ -1,16 +1,40 @@
 import React, { useState } from "react";
-import { CircleUserRound, Copy } from "lucide-react";
+import { CircleUserRound, Copy, Download } from "lucide-react";
 import 'animate.css'
+import { ToastContainer, toast } from "react-toastify";
 
 
 const App = () =>{
+
+  const pattern = "gE#9@aP7$Q!zF1^kX8)rH4%L(cT&sV*J0N_DwZ}q+?B3{5]U2[6M<,>Y/RO~I|t-"
   const [password, setPassword] = useState('')
   const generatePassword = (e) =>{
     e.preventDefault();
-   const len = e.taget[0].value
-    
+   var p =''
+   const len = e.target[0].value
+   const pattern_len = pattern.length-1
+   for(let i=0; i < len; i++)
+   {
+   const randomIndex = Math.floor(Math.random() * pattern_len)
+   p = p+pattern[randomIndex]
+   }
+   setPassword(p)
 
   } 
+
+  const copyPassword = ()=>{
+    navigator.clipboard.writeText(password)
+    toast.success("Password Copied")
+  }
+  const downloadPassword = ()=>{
+    const blob = new Blob([password], { type:'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a");
+    a.href = url
+    a.download = "password.txt"
+    a.click();
+    URL.revokeObjectURL(url)
+  }
 
   return(
   <div className="h-screen bg-gradient-to-tr from-slate-900 via-rose-900 to-slate-900 flex justify-center items-center">
@@ -25,14 +49,18 @@ const App = () =>{
      {
       password !== '' &&
      <div className="p-3 rounded-lg bg-black/20 text-white w-full flex items-center justify-between mt-6">
-     <p>
+     <p className="truncate">
       {password}
      </p>
-       <Copy className="w-4 h-4 hover:scale-115 duration-300" />
+     <div className="flex items-center justify-between gap-2">
+       <Copy onClick={copyPassword} className="w-4 h-4 hover:scale-115 duration-300" />
+       <Download onClick={downloadPassword} className="w-4 h-4 hover:scale-115 duration-300" />
+       </div>
      </div>
   }
 
      </div>
+     <ToastContainer/>
   </div>
   )
 
